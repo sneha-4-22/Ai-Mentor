@@ -382,8 +382,54 @@ async function exportChat() {
 
 
 function convertMarkdownToHTML(markdownText) {
-  const htmlContent = marked.parse(markdownText);
-  return htmlContent;
+  if (!markdownText) return '';
+  
+  // Replace code blocks (```code```)
+  let html = markdownText.replace(/```([^`]+)```/g, function(match, code) {
+    return '<pre><code>' + escapeHTML(code.trim()) + '</code></pre>';
+  });
+  
+  // Replace inline code (`code`)
+  html = html.replace(/`([^`]+)`/g, function(match, code) {
+    return '<code>' + escapeHTML(code) + '</code>';
+  });
+  
+  // Replace headers (# Header)
+  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+  
+  // Replace bold (**text**)
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  // Replace italic (*text*)
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  
+  // Replace links ([text](url))
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  
+  // Replace unordered lists
+  html = html.replace(/^\s*-\s*(.*$)/gm, '<li>$1</li>');
+  html = html.replace(/<li>(.*?)<\/li>(?:\s*<li>)/g, '<li>$1</li><li>');
+  html = html.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
+  
+  // Replace ordered lists
+  html = html.replace(/^\s*\d+\.\s*(.*$)/gm, '<li>$1</li>');
+  
+  // Replace line breaks
+  html = html.replace(/\n\n/g, '<br><br>');
+  
+  return html;
+}
+
+// Helper function to escape HTML special characters
+function escapeHTML(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 // Message Setup Start
