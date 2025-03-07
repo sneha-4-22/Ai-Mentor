@@ -865,16 +865,13 @@ Follow these Behaviour Guidelines strictly and learn from the Example Interactio
 }
 
 
-// Prompt Setup Done
-
-// Injecting XHR Data Start
 window.addEventListener("xhrDataFetched", (event) => {
   XhrRequestData = event.detail;
 });
 
 function injectScript() {
   const script = document.createElement("script");
-  script.src = chrome.runtime.getURL("inject.js");
+  script.src = chrome.runtime.getURL("file.js");
   document.documentElement.insertAdjacentElement("afterbegin", script);
   script.remove();
   
